@@ -117,3 +117,22 @@ export interface DocumentMoveParams {
   collectionId?: string;
   parentDocumentId?: string | null;
 }
+
+export interface CollectionCreateParams {
+  name: string;
+  description?: string;
+  color?: string;
+  permission?: 'read' | 'read_write';
+}
+
+export interface CollectionUpdateParams {
+  id: string;
+  name?: string;
+  description?: string;
+  color?: string;
+  permission?: 'read' | 'read_write';
+}
+
+export interface DocumentExport {
+  data: string;
+}

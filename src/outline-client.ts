@@ -9,7 +9,10 @@ import type {
   DocumentSearchParams,
   DocumentCreateParams,
   DocumentUpdateParams,
-  DocumentMoveParams
+  DocumentMoveParams,
+  CollectionCreateParams,
+  CollectionUpdateParams,
+  DocumentExport
 } from './types.js';
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -183,5 +186,44 @@ export class OutlineClient {
   async moveDocument(params: DocumentMoveParams): Promise<OutlineDocument[]> {
     const response = await this.request<{ documents: OutlineDocument[] }>('documents.move', { ...params });
     return response.data.documents;
+  }
+
+  async deleteDocument(id: string, permanent = false): Promise<void> {
+    await this.request<void>('documents.delete', { id, permanent });
+  }
+
+  async archiveDocument(id: string): Promise<OutlineDocument> {
+    const response = await this.request<OutlineDocument>('documents.archive', { id });
+    return response.data;
+  }
+
+  async unarchiveDocument(id: string): Promise<OutlineDocument> {
+    const response = await this.request<OutlineDocument>('documents.unarchive', { id });
+    return response.data;
+  }
+
+  async listDrafts(): Promise<OutlineDocument[]> {
+    return this.fetchAllPages<OutlineDocument>('documents.drafts', {}, 'documents');
+  }
+
+  async exportDocument(id: string): Promise<string> {
+    const response = await this.request<DocumentExport>('documents.export', { id });
+    return response.data.data;
+  }
+
+  // Additional collection methods
+
+  async createCollection(params: CollectionCreateParams): Promise<OutlineCollection> {
+    const response = await this.request<OutlineCollection>('collections.create', { ...params });
+    return response.data;
+  }
+
+  async updateCollection(params: CollectionUpdateParams): Promise<OutlineCollection> {
+    const response = await this.request<OutlineCollection>('collections.update', { ...params });
+    return response.data;
+  }
+
+  async deleteCollection(id: string): Promise<void> {
+    await this.request<void>('collections.delete', { id });
   }
 }

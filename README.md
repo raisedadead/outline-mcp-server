@@ -1,99 +1,84 @@
 # outline-mcp
 
-MCP server for Outline wiki integration. Enables Claude to read, search, and manage documents in your Outline workspace.
+MCP server that connects Claude to your [Outline](https://www.getoutline.com/) wiki. Search, read, create, and manage documents directly from Claude Code.
 
-## Installation
+## Features
 
-### For Claude Code Users
+- **Search** - Full-text search across all documents
+- **Read** - Retrieve document content in markdown
+- **Write** - Create and update documents programmatically
+- **Organize** - Move documents between collections, archive/restore
+- **Browse** - Navigate collections via MCP resources
+- **Export** - Get clean markdown exports
 
-Add to your Claude Code MCP settings (`~/.claude/claude_code_config.json`):
-
-```json
-{
-  "mcpServers": {
-    "outline": {
-      "command": "npx",
-      "args": ["-y", "github:YOUR_ORG/outline-mcp"],
-      "env": {
-        "OUTLINE_BASE_URL": "https://your-outline-instance.com",
-        "OUTLINE_API_KEY": "ol_api_xxx"
-      }
-    }
-  }
-}
-```
-
-Replace `YOUR_ORG/outline-mcp` with the actual GitHub repo path.
-
-### Manual Installation
+## Quick Start
 
 ```bash
-# Clone and install
-git clone https://github.com/YOUR_ORG/outline-mcp.git
-cd outline-mcp
-npm install
-npm run build
-
-# Run
-OUTLINE_BASE_URL="https://your-outline.com" \
-OUTLINE_API_KEY="ol_api_xxx" \
-node dist/index.js
+claude mcp add -e OUTLINE_BASE_URL=https://your-instance.com -e OUTLINE_API_KEY=ol_api_xxx -s user outline -- npx -y github:YOUR_ORG/outline-mcp
 ```
 
-## Configuration
+Restart Claude Code, then run `/mcp` to verify the connection.
 
-### Environment Variables
+### Get Your API Key
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `OUTLINE_BASE_URL` | Yes | Your Outline instance URL |
-| `OUTLINE_API_KEY` | Yes | API key from Outline Settings > API |
+1. Open Outline > **Settings** > **API**
+2. Click **Create API Key**
+3. Copy the key (starts with `ol_api_`)
 
-### Config File (Optional)
+## Tools
 
-You can also use a JSON config file:
-
-```bash
-node dist/index.js --config config.json
-```
-
-```json
-{
-  "outline": {
-    "baseUrl": "https://your-outline-instance.com",
-    "apiKey": "ol_api_xxx"
-  }
-}
-```
-
-Environment variables take precedence, config file values override them.
-
-## Available Tools
+### Documents
 
 | Tool | Description |
 |------|-------------|
 | `outline_search` | Search documents by query |
 | `outline_get_document` | Get document content by ID |
-| `outline_list_collections` | List all collections |
-| `outline_list_documents` | List documents (optionally filtered) |
+| `outline_list_documents` | List documents in a collection |
 | `outline_create_document` | Create a new document |
-| `outline_update_document` | Update an existing document |
+| `outline_update_document` | Update existing document |
 | `outline_move_document` | Move document between collections |
+| `outline_delete_document` | Delete a document |
+| `outline_archive_document` | Archive a document (soft delete) |
+| `outline_unarchive_document` | Restore archived document |
+| `outline_list_drafts` | List unpublished drafts |
+| `outline_export_document` | Export as clean markdown |
 
-## Available Resources
+### Collections
 
-| Resource | URI |
-|----------|-----|
-| All Collections | `outline://collections` |
-| Collection Details | `outline://collections/{id}` |
-| Document Content | `outline://documents/{id}` |
+| Tool | Description |
+|------|-------------|
+| `outline_list_collections` | List all collections |
+| `outline_get_collection` | Get collection details |
+| `outline_create_collection` | Create a new collection |
+| `outline_update_collection` | Update collection |
+| `outline_delete_collection` | Delete collection |
 
-## Getting Your API Key
+## Resources
 
-1. Open your Outline instance
-2. Go to **Settings** > **API**
-3. Click **Create API Key**
-4. Copy the key (starts with `ol_api_`)
+| URI | Description |
+|-----|-------------|
+| `outline://collections` | All collections |
+| `outline://collections/{id}` | Collection with document list |
+| `outline://documents/{id}` | Document content |
+
+## Development
+
+```bash
+git clone https://github.com/YOUR_ORG/outline-mcp.git
+cd outline-mcp
+pnpm install && pnpm build
+
+# Test locally
+claude mcp add -e OUTLINE_BASE_URL=https://your-instance.com -e OUTLINE_API_KEY=ol_api_xxx -s user outline -- node $(pwd)/dist/index.js
+```
+
+## Server Management
+
+```bash
+claude mcp list            # List servers
+claude mcp get outline     # Server details
+claude mcp remove outline  # Remove server
+```
 
 ## License
 

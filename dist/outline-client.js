@@ -138,5 +138,35 @@ export class OutlineClient {
         const response = await this.request('documents.move', { ...params });
         return response.data.documents;
     }
+    async deleteDocument(id, permanent = false) {
+        await this.request('documents.delete', { id, permanent });
+    }
+    async archiveDocument(id) {
+        const response = await this.request('documents.archive', { id });
+        return response.data;
+    }
+    async unarchiveDocument(id) {
+        const response = await this.request('documents.unarchive', { id });
+        return response.data;
+    }
+    async listDrafts() {
+        return this.fetchAllPages('documents.drafts', {}, 'documents');
+    }
+    async exportDocument(id) {
+        const response = await this.request('documents.export', { id });
+        return response.data.data;
+    }
+    // Additional collection methods
+    async createCollection(params) {
+        const response = await this.request('collections.create', { ...params });
+        return response.data;
+    }
+    async updateCollection(params) {
+        const response = await this.request('collections.update', { ...params });
+        return response.data;
+    }
+    async deleteCollection(id) {
+        await this.request('collections.delete', { id });
+    }
 }
 //# sourceMappingURL=outline-client.js.map

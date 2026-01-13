@@ -237,4 +237,238 @@ export function registerTools(server: McpServer, client: OutlineClient): void {
       };
     }
   );
+
+  // outline_delete_document - Delete a document
+  server.tool(
+    'outline_delete_document',
+    'Delete a document from Outline',
+    {
+      id: z.string().describe('Document ID to delete'),
+      permanent: z.boolean().optional().describe('Permanently delete (default: false, moves to trash)')
+    },
+    async ({ id, permanent }) => {
+      await client.deleteDocument(id, permanent ?? false);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ deleted: true, id, permanent: permanent ?? false }, null, 2)
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_archive_document - Archive a document
+  server.tool(
+    'outline_archive_document',
+    'Archive a document (soft delete, can be restored)',
+    {
+      id: z.string().describe('Document ID to archive')
+    },
+    async ({ id }) => {
+      const doc = await client.archiveDocument(id);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(
+              { archived: true, id: doc.id, title: doc.title, archivedAt: doc.archivedAt },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_unarchive_document - Restore an archived document
+  server.tool(
+    'outline_unarchive_document',
+    'Restore an archived document',
+    {
+      id: z.string().describe('Document ID to unarchive')
+    },
+    async ({ id }) => {
+      const doc = await client.unarchiveDocument(id);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ restored: true, id: doc.id, title: doc.title }, null, 2)
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_list_drafts - List user's draft documents
+  server.tool(
+    'outline_list_drafts',
+    'List all draft (unpublished) documents',
+    {},
+    async () => {
+      const docs = await client.listDrafts();
+
+      const formatted = docs.map((d) => ({
+        id: d.id,
+        title: d.title,
+        collectionId: d.collectionId,
+        updatedAt: d.updatedAt
+      }));
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(formatted, null, 2)
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_export_document - Export document as markdown
+  server.tool(
+    'outline_export_document',
+    'Export a document as clean markdown',
+    {
+      id: z.string().describe('Document ID to export')
+    },
+    async ({ id }) => {
+      const markdown = await client.exportDocument(id);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: markdown
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_get_collection - Get collection details
+  server.tool(
+    'outline_get_collection',
+    'Get details of a specific collection',
+    {
+      id: z.string().describe('Collection ID')
+    },
+    async ({ id }) => {
+      const collection = await client.getCollection(id);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(
+              {
+                id: collection.id,
+                name: collection.name,
+                description: collection.description,
+                color: collection.color,
+                permission: collection.permission
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_create_collection - Create a new collection
+  server.tool(
+    'outline_create_collection',
+    'Create a new collection in Outline',
+    {
+      name: z.string().describe('Collection name'),
+      description: z.string().optional().describe('Collection description'),
+      color: z.string().optional().describe('Collection color (hex code)'),
+      permission: z.enum(['read', 'read_write']).optional().describe('Default permission level')
+    },
+    async ({ name, description, color, permission }) => {
+      const collection = await client.createCollection({ name, description, color, permission });
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(
+              {
+                id: collection.id,
+                name: collection.name,
+                description: collection.description,
+                color: collection.color
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_update_collection - Update a collection
+  server.tool(
+    'outline_update_collection',
+    'Update an existing collection',
+    {
+      id: z.string().describe('Collection ID to update'),
+      name: z.string().optional().describe('New collection name'),
+      description: z.string().optional().describe('New collection description'),
+      color: z.string().optional().describe('New collection color (hex code)'),
+      permission: z.enum(['read', 'read_write']).optional().describe('New default permission level')
+    },
+    async ({ id, name, description, color, permission }) => {
+      const collection = await client.updateCollection({ id, name, description, color, permission });
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify(
+              {
+                id: collection.id,
+                name: collection.name,
+                description: collection.description,
+                color: collection.color
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+  );
+
+  // outline_delete_collection - Delete a collection
+  server.tool(
+    'outline_delete_collection',
+    'Delete a collection and all its documents',
+    {
+      id: z.string().describe('Collection ID to delete')
+    },
+    async ({ id }) => {
+      await client.deleteCollection(id);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ deleted: true, id }, null, 2)
+          }
+        ]
+      };
+    }
+  );
 }
