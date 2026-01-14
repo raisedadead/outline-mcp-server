@@ -1,6 +1,7 @@
-# outline-mcp
+# outline-wiki-mcp
 
-MCP server that connects Claude to your [Outline](https://www.getoutline.com/) wiki. Search, read, create, and manage documents directly from Claude Code.
+MCP server that connects Claude to your [Outline](https://www.getoutline.com/) wiki. Search, read, create, and manage
+documents directly from Claude Code.
 
 ## Features
 
@@ -14,7 +15,7 @@ MCP server that connects Claude to your [Outline](https://www.getoutline.com/) w
 ## Quick Start
 
 ```bash
-claude mcp add -e OUTLINE_BASE_URL=https://your-instance.com -e OUTLINE_API_KEY=ol_api_xxx -s user outline -- npx -y github:YOUR_ORG/outline-mcp
+claude mcp add -e OUTLINE_BASE_URL=https://your-instance.com -e OUTLINE_API_KEY=ol_api_xxx -s user outline -- npx -y outline-wiki-mcp
 ```
 
 Restart Claude Code, then run `/mcp` to verify the connection.
@@ -29,56 +30,41 @@ Restart Claude Code, then run `/mcp` to verify the connection.
 
 ### Documents
 
-| Tool | Description |
-|------|-------------|
-| `outline_search` | Search documents by query |
-| `outline_get_document` | Get document content by ID |
-| `outline_list_documents` | List documents in a collection |
-| `outline_create_document` | Create a new document |
-| `outline_update_document` | Update existing document |
-| `outline_move_document` | Move document between collections |
-| `outline_delete_document` | Delete a document |
-| `outline_archive_document` | Archive a document (soft delete) |
-| `outline_unarchive_document` | Restore archived document |
-| `outline_list_drafts` | List unpublished drafts |
-| `outline_export_document` | Export as clean markdown |
+| Tool                         | Description                       |
+| ---------------------------- | --------------------------------- |
+| `outline_search`             | Search documents by query         |
+| `outline_get_document`       | Get document content by ID        |
+| `outline_list_documents`     | List documents in a collection    |
+| `outline_create_document`    | Create a new document             |
+| `outline_update_document`    | Update existing document          |
+| `outline_move_document`      | Move document between collections |
+| `outline_delete_document`    | Delete a document                 |
+| `outline_archive_document`   | Archive a document (soft delete)  |
+| `outline_unarchive_document` | Restore archived document         |
+| `outline_list_drafts`        | List unpublished drafts           |
+| `outline_export_document`    | Export as clean markdown          |
 
 ### Collections
 
-| Tool | Description |
-|------|-------------|
-| `outline_list_collections` | List all collections |
-| `outline_get_collection` | Get collection details |
+| Tool                        | Description             |
+| --------------------------- | ----------------------- |
+| `outline_list_collections`  | List all collections    |
+| `outline_get_collection`    | Get collection details  |
 | `outline_create_collection` | Create a new collection |
-| `outline_update_collection` | Update collection |
-| `outline_delete_collection` | Delete collection |
+| `outline_update_collection` | Update collection       |
+| `outline_delete_collection` | Delete collection       |
 
 ## Resources
 
-| URI | Description |
-|-----|-------------|
-| `outline://collections` | All collections |
+| URI                          | Description                   |
+| ---------------------------- | ----------------------------- |
+| `outline://collections`      | All collections               |
 | `outline://collections/{id}` | Collection with document list |
-| `outline://documents/{id}` | Document content |
+| `outline://documents/{id}`   | Document content              |
 
-## Development
+## Contributing
 
-```bash
-git clone https://github.com/YOUR_ORG/outline-mcp.git
-cd outline-mcp
-pnpm install && pnpm build
-
-# Test locally
-claude mcp add -e OUTLINE_BASE_URL=https://your-instance.com -e OUTLINE_API_KEY=ol_api_xxx -s user outline -- node $(pwd)/dist/index.js
-```
-
-## Server Management
-
-```bash
-claude mcp list            # List servers
-claude mcp get outline     # Server details
-claude mcp remove outline  # Remove server
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, commit conventions, and publishing workflow.
 
 ## License
 

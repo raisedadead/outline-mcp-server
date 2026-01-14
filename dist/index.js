@@ -19,7 +19,7 @@ async function main() {
     // Create MCP server
     const server = new McpServer({
         name: packageJson.name,
-        version: packageJson.version
+        version: packageJson.version,
     });
     // Register tools and resources
     registerTools(server, client);
@@ -29,7 +29,7 @@ async function main() {
     await server.connect(transport);
 }
 main().catch((error) => {
-    console.error('Failed to start outline-mcp:', error.message);
+    console.error('Failed to start outline-mcp-server:', error.message);
     if (error.stack) {
         console.error(error.stack);
     }
