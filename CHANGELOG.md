@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/raisedadead/outline-wiki-mcp/compare/v1.2.1...v1.2.2) (2026-02-27)
+
+
+### Bug Fixes
+
+* address multi-session bug ([0db6d52](https://github.com/raisedadead/outline-wiki-mcp/commit/0db6d520a65b2421a59479cc56150f0ebaed2a5e))
+
 ## [1.2.1](https://github.com/raisedadead/outline-wiki-mcp/compare/v1.2.0...v1.2.1) (2026-02-27)
 
 
