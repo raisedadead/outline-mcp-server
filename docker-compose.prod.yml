@@ -1,6 +1,6 @@
 services:
   outline-wiki-mcp:
-    build: .
+    image: ghcr.io/raisedadead/outline-wiki-mcp:latest
     ports:
       - "${PORT:-3000}:3000"
     environment:

@@ -48,20 +48,37 @@ async function startStdio(client: OutlineClient): Promise<void> {
 }
 
 async function startHttp(client: OutlineClient, port: number): Promise<void> {
-  const server = new McpServer({
-    name: packageJson.name,
-    version: packageJson.version,
-  });
+  const sessions = new Map<
+    string,
+    { transport: StreamableHTTPServerTransport; server: McpServer }
+  >();
 
-  registerTools(server, client);
-  registerResources(server, client);
+  function createSession(): StreamableHTTPServerTransport {
+    const server = new McpServer({
+      name: packageJson.name,
+      version: packageJson.version,
+    });
+    registerTools(server, client);
+    registerResources(server, client);
 
-  const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: () => randomUUID(),
-    enableJsonResponse: true,
-  });
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => randomUUID(),
+      enableJsonResponse: true,
+      onsessioninitialized: (sessionId: string) => {
+        sessions.set(sessionId, { transport, server });
+      },
+      onsessionclosed: (sessionId: string) => {
+        const entry = sessions.get(sessionId);
+        if (entry) {
+          void entry.server.close();
+          sessions.delete(sessionId);
+        }
+      },
+    });
 
-  await server.connect(transport);
+    void server.connect(transport);
+    return transport;
+  }
 
   const httpServer = createServer(async (req, res) => {
     const url = new URL(
@@ -69,15 +86,33 @@ async function startHttp(client: OutlineClient, port: number): Promise<void> {
       `http://${req.headers.host ?? 'localhost'}`
     );
 
-    // Health check endpoint
     if (url.pathname === '/health' && req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ status: 'ok' }));
       return;
     }
 
-    // MCP endpoint
     if (url.pathname === '/mcp') {
+      const sessionId = req.headers['mcp-session-id'] as string | undefined;
+
+      if (sessionId) {
+        const entry = sessions.get(sessionId);
+        if (entry) {
+          await entry.transport.handleRequest(req, res);
+        } else {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              error: { code: -32000, message: 'Session not found' },
+              id: null,
+            })
+          );
+        }
+        return;
+      }
+
+      const transport = createSession();
       await transport.handleRequest(req, res);
       return;
     }
@@ -92,10 +127,12 @@ async function startHttp(client: OutlineClient, port: number): Promise<void> {
     console.log(`  Health check: http://localhost:${port}/health`);
   });
 
-  // Graceful shutdown
   const shutdown = async () => {
     console.log('\nShutting down...');
-    await transport.close();
+    const closing = [...sessions.values()].map(({ transport, server }) =>
+      transport.close().then(() => server.close())
+    );
+    await Promise.all(closing);
     httpServer.close();
     process.exit(0);
   };
