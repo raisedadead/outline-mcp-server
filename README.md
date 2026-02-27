@@ -1,6 +1,7 @@
 # Outline Wiki MCP Server
 
 [![npm version](https://img.shields.io/npm/v/outline-wiki-mcp)](https://www.npmjs.com/package/outline-wiki-mcp)
+[![Docker](https://img.shields.io/badge/ghcr.io-outline--wiki--mcp-blue)](https://ghcr.io/raisedadead/outline-wiki-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
 
@@ -29,9 +30,94 @@ like Claude.ai web).
 - [Outline](https://www.getoutline.com/) instance (cloud or self-hosted)
 - API key from Outline > **Settings** > **API** > **Create API Key**
 
-### Local (stdio) - Claude Desktop / Claude Code
+## Installation
 
-Add to your MCP client configuration:
+### npx (stdio)
+
+Zero-install, runs locally via stdio transport:
+
+```bash
+OUTLINE_BASE_URL=https://your-instance.getoutline.com \
+OUTLINE_API_KEY=ol_api_xxx \
+npx -y outline-wiki-mcp
+```
+
+### Docker (HTTP)
+
+Pull the pre-built image from GHCR and run in HTTP mode:
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e OUTLINE_BASE_URL=https://your-instance.getoutline.com \
+  -e OUTLINE_API_KEY=ol_api_xxx \
+  ghcr.io/raisedadead/outline-wiki-mcp:latest
+```
+
+The MCP endpoint will be available at `http://localhost:3000/mcp`.
+
+### Docker Compose
+
+Create a `.env` file with your credentials:
+
+```bash
+OUTLINE_BASE_URL=https://your-instance.getoutline.com
+OUTLINE_API_KEY=ol_api_xxx
+```
+
+Then start the service:
+
+```bash
+docker compose up -d
+```
+
+The `docker-compose.yml` included in the repository:
+
+```yaml
+services:
+  outline-wiki-mcp:
+    image: ghcr.io/raisedadead/outline-wiki-mcp:latest
+    build: .
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      - OUTLINE_BASE_URL=${OUTLINE_BASE_URL}
+      - OUTLINE_API_KEY=${OUTLINE_API_KEY}
+      - MCP_TRANSPORT=http
+      - PORT=3000
+    restart: unless-stopped
+```
+
+### From Source
+
+```bash
+git clone https://github.com/raisedadead/outline-wiki-mcp.git
+cd outline-wiki-mcp
+pnpm install
+pnpm build
+```
+
+Run in stdio mode:
+
+```bash
+OUTLINE_BASE_URL=https://your-instance.getoutline.com \
+OUTLINE_API_KEY=ol_api_xxx \
+pnpm start
+```
+
+Run in HTTP mode:
+
+```bash
+OUTLINE_BASE_URL=https://your-instance.getoutline.com \
+OUTLINE_API_KEY=ol_api_xxx \
+pnpm start:http
+```
+
+## Client Configuration
+
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
@@ -48,29 +134,64 @@ Add to your MCP client configuration:
 }
 ```
 
-### Remote (HTTP) - Claude.ai Web
-
-Run the server in HTTP mode and connect from any remote MCP client:
+### Claude Code CLI (stdio)
 
 ```bash
-OUTLINE_BASE_URL=https://your-instance.getoutline.com \
-OUTLINE_API_KEY=ol_api_xxx \
-npx outline-wiki-mcp --transport http
+claude mcp add \
+  -e OUTLINE_BASE_URL=https://your-instance.getoutline.com \
+  -e OUTLINE_API_KEY=ol_api_xxx \
+  -s user \
+  outline -- npx -y outline-wiki-mcp
 ```
 
-The MCP endpoint will be available at `http://localhost:3000/mcp`.
+### Claude Code CLI (HTTP)
 
-### Docker
+First start the server in HTTP mode (using Docker or npx), then add the remote endpoint:
 
 ```bash
-docker compose up -d
+claude mcp add -s user --transport http outline http://localhost:3000/mcp
 ```
 
-Provide your credentials via a `.env` file or environment variables:
+### Claude.ai Web
 
-```bash
-OUTLINE_BASE_URL=https://your-instance.getoutline.com
-OUTLINE_API_KEY=ol_api_xxx
+Add as a remote MCP server in Claude.ai settings using the HTTP endpoint URL:
+
+```
+http://localhost:3000/mcp
+```
+
+Replace `localhost:3000` with your deployed server address.
+
+### Generic MCP Client
+
+**stdio transport:**
+
+```json
+{
+  "mcpServers": {
+    "outline": {
+      "command": "npx",
+      "args": ["-y", "outline-wiki-mcp"],
+      "env": {
+        "OUTLINE_BASE_URL": "https://your-instance.getoutline.com",
+        "OUTLINE_API_KEY": "ol_api_xxx"
+      }
+    }
+  }
+}
+```
+
+**HTTP transport:**
+
+```json
+{
+  "mcpServers": {
+    "outline": {
+      "transport": "http",
+      "url": "http://localhost:3000/mcp"
+    }
+  }
+}
 ```
 
 ## Configuration
@@ -97,8 +218,11 @@ npx outline-wiki-mcp --config /path/to/config.json
 }
 ```
 
-Config file values take precedence over environment variables. CLI flags take precedence over environment variables for
-transport settings.
+**Precedence rules:**
+
+1. Config file values override environment variables for Outline credentials
+2. CLI flags (`--transport`, `--port`) override environment variables
+3. Environment variables (`MCP_TRANSPORT`, `PORT`) override defaults
 
 ## Tools
 
@@ -140,13 +264,13 @@ Browse your wiki structure using MCP resource URIs:
 
 ## Development
 
-```bash
-pnpm install        # Install dependencies
-pnpm build          # Compile TypeScript
-pnpm dev            # Watch mode
-pnpm test           # Run tests
-pnpm lint           # Type-check
-```
+| Command        | Description        |
+| -------------- | ------------------ |
+| `pnpm install` | Install deps       |
+| `pnpm build`   | Compile TypeScript |
+| `pnpm dev`     | Watch mode         |
+| `pnpm test`    | Run tests          |
+| `pnpm lint`    | Type-check         |
 
 ### Running Locally
 

@@ -12,7 +12,7 @@ COPY package.json pnpm-lock.yaml ./
 
 FROM base AS build
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 COPY src/ src/
 COPY tsconfig.json ./
 RUN pnpm run build
@@ -21,11 +21,23 @@ RUN pnpm run build
 
 FROM base AS prod-deps
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # ---
 
 FROM node:24-slim
+
+LABEL org.opencontainers.image.title="outline-wiki-mcp" \
+      org.opencontainers.image.description="MCP server for Outline wiki integration" \
+      org.opencontainers.image.url="https://github.com/raisedadead/outline-wiki-mcp" \
+      org.opencontainers.image.source="https://github.com/raisedadead/outline-wiki-mcp" \
+      org.opencontainers.image.documentation="https://github.com/raisedadead/outline-wiki-mcp#readme" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.vendor="Mrugesh Mohapatra" \
+      org.opencontainers.image.authors="Mrugesh Mohapatra"
+
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs app
 
 WORKDIR /app
 
@@ -38,6 +50,8 @@ ENV MCP_TRANSPORT=http
 ENV PORT=3000
 
 EXPOSE 3000
+
+USER app
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD node -e "fetch('http://localhost:3000/health').then(r=>{if(!r.ok)throw r;process.exit(0)}).catch(()=>process.exit(1))"

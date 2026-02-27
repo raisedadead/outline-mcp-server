@@ -7,3 +7,15 @@ dist/
 .env
 .env.*
 !.env.example
+tests/
+.claude/
+.releaserc.json
+.prettierrc*
+commitlint.config.mjs
+renovate.json
+CONTRIBUTING.md
+CHANGELOG.md
+README.md
+LICENSE
+docker-compose.yml
+vitest.config.ts
