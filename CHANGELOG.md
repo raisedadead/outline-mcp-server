@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/raisedadead/outline-wiki-mcp/compare/v1.0.0...v1.1.0) (2026-02-27)
+
+
+### Features
+
+* Add HTTP transport support to MCP server ([#1](https://github.com/raisedadead/outline-wiki-mcp/issues/1)) ([9d4b19d](https://github.com/raisedadead/outline-wiki-mcp/commit/9d4b19dadfd8661c446eaf9a5ce045d717737560))
+
 # 1.0.0 (2026-01-19)
 
 
