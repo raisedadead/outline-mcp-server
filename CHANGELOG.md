@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/raisedadead/outline-wiki-mcp/compare/v1.2.0...v1.2.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* improve image ([469d39a](https://github.com/raisedadead/outline-wiki-mcp/commit/469d39a64fa666826d8555ab0c5cc3444060010e))
+
 # [1.2.0](https://github.com/raisedadead/outline-wiki-mcp/compare/v1.1.0...v1.2.0) (2026-02-27)
 
 
