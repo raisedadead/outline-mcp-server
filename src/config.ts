@@ -1,5 +1,5 @@
 import { readFileSync, existsSync } from 'node:fs';
-import type { OutlineConfig } from './types.js';
+import type { OutlineConfig, TransportConfig } from './types.js';
 
 interface ConfigFile {
   outline?: {
@@ -30,7 +30,9 @@ export function loadConfig(configPath?: string): OutlineConfig {
       if (nodeError.code === 'ENOENT') {
         throw new Error(`Config file not found: ${configPath}`);
       } else if (error instanceof SyntaxError) {
-        throw new Error(`Invalid JSON in config file ${configPath}: ${error.message}`);
+        throw new Error(
+          `Invalid JSON in config file ${configPath}: ${error.message}`
+        );
       }
       const message = error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to read config file ${configPath}: ${message}`);
@@ -63,4 +65,37 @@ export function getConfigPath(): string | undefined {
     return process.argv[configIndex + 1];
   }
   return undefined;
+}
+
+export function getTransportConfig(): TransportConfig {
+  // Check for --transport flag in args, then env var, default to stdio
+  const transportIndex = process.argv.indexOf('--transport');
+  let transport: string | undefined;
+  if (transportIndex !== -1 && process.argv[transportIndex + 1]) {
+    transport = process.argv[transportIndex + 1];
+  }
+  transport = transport || process.env.MCP_TRANSPORT || 'stdio';
+
+  if (transport !== 'stdio' && transport !== 'http') {
+    throw new Error(
+      `Invalid transport "${transport}". Must be "stdio" or "http".`
+    );
+  }
+
+  // Check for --port flag in args, then env var, default to 3000
+  const portIndex = process.argv.indexOf('--port');
+  let portStr: string | undefined;
+  if (portIndex !== -1 && process.argv[portIndex + 1]) {
+    portStr = process.argv[portIndex + 1];
+  }
+  portStr = portStr || process.env.PORT;
+  const port = portStr ? parseInt(portStr, 10) : 3000;
+
+  if (isNaN(port) || port < 1 || port > 65535) {
+    throw new Error(
+      `Invalid port "${portStr}". Must be a number between 1 and 65535.`
+    );
+  }
+
+  return { transport, port };
 }

@@ -8,6 +8,11 @@ export interface OutlineConfig {
   apiKey: string;
 }
 
+export interface TransportConfig {
+  transport: 'stdio' | 'http';
+  port: number;
+}
+
 export interface OutlineUser {
   id: string;
   name: string;
