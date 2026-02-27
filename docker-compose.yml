@@ -1,9 +1,7 @@
 services:
   outline-wiki-mcp:
-    # Pull the pre-built image from GHCR by default (docker compose up)
+    # For local builds, use: docker buildx bake
     image: ghcr.io/raisedadead/outline-wiki-mcp:latest
-    # To build locally instead, run: docker compose up --build
-    build: .
     ports:
       - "${PORT:-3000}:3000"
     environment:

@@ -77,7 +77,6 @@ The `docker-compose.yml` included in the repository:
 services:
   outline-wiki-mcp:
     image: ghcr.io/raisedadead/outline-wiki-mcp:latest
-    build: .
     ports:
       - '${PORT:-3000}:3000'
     environment:
@@ -95,6 +94,12 @@ git clone https://github.com/raisedadead/outline-wiki-mcp.git
 cd outline-wiki-mcp
 pnpm install
 pnpm build
+```
+
+Build a local Docker image:
+
+```bash
+docker buildx bake
 ```
 
 Run in stdio mode:
@@ -264,13 +269,15 @@ Browse your wiki structure using MCP resource URIs:
 
 ## Development
 
-| Command        | Description        |
-| -------------- | ------------------ |
-| `pnpm install` | Install deps       |
-| `pnpm build`   | Compile TypeScript |
-| `pnpm dev`     | Watch mode         |
-| `pnpm test`    | Run tests          |
-| `pnpm lint`    | Type-check         |
+| Command                      | Description          |
+| ---------------------------- | -------------------- |
+| `pnpm install`               | Install deps         |
+| `pnpm build`                 | Compile TypeScript   |
+| `pnpm dev`                   | Watch mode           |
+| `pnpm test`                  | Run tests            |
+| `pnpm lint`                  | Type-check           |
+| `docker buildx bake`         | Build Docker image   |
+| `docker buildx bake --print` | Preview build config |
 
 ### Running Locally
 

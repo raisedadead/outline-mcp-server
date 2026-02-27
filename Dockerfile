@@ -27,23 +27,14 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-l
 
 FROM node:24-slim
 
-LABEL org.opencontainers.image.title="outline-wiki-mcp" \
-      org.opencontainers.image.description="MCP server for Outline wiki integration" \
-      org.opencontainers.image.url="https://github.com/raisedadead/outline-wiki-mcp" \
-      org.opencontainers.image.source="https://github.com/raisedadead/outline-wiki-mcp" \
-      org.opencontainers.image.documentation="https://github.com/raisedadead/outline-wiki-mcp#readme" \
-      org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.vendor="Mrugesh Mohapatra" \
-      org.opencontainers.image.authors="Mrugesh Mohapatra"
-
 RUN groupadd --system --gid 1001 nodejs && \
     useradd --system --uid 1001 --gid nodejs app
 
 WORKDIR /app
 
-COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY package.json ./
+COPY --link --from=prod-deps /app/node_modules ./node_modules
+COPY --link --from=build /app/dist ./dist
+COPY --link package.json ./
 
 ENV NODE_ENV=production
 ENV MCP_TRANSPORT=http
