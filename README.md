@@ -8,6 +8,9 @@ A [Model Context Protocol](https://modelcontextprotocol.io) server for [Outline]
 integration. Enables LLM applications to search, read, create, and manage wiki documents through a standardized
 interface.
 
+Supports both **stdio** (for local tools like Claude Desktop, Claude Code) and **HTTP** transport (for remote clients
+like Claude.ai web).
+
 ## Features
 
 - **Full-text Search** - Find documents across your entire wiki
@@ -17,8 +20,18 @@ interface.
 - **Draft Access** - Work with unpublished drafts
 - **Markdown Export** - Export documents as clean markdown
 - **MCP Resources** - Browse collections and documents via resource URIs
+- **Dual Transport** - Run as a local stdio server or remote HTTP service
 
-## Setup
+## Quick Start
+
+### Prerequisites
+
+- [Outline](https://www.getoutline.com/) instance (cloud or self-hosted)
+- API key from Outline > **Settings** > **API** > **Create API Key**
+
+### Local (stdio) - Claude Desktop / Claude Code
+
+Add to your MCP client configuration:
 
 ```json
 {
@@ -35,7 +48,57 @@ interface.
 }
 ```
 
-Get your API key from Outline > **Settings** > **API** > **Create API Key**.
+### Remote (HTTP) - Claude.ai Web
+
+Run the server in HTTP mode and connect from any remote MCP client:
+
+```bash
+OUTLINE_BASE_URL=https://your-instance.getoutline.com \
+OUTLINE_API_KEY=ol_api_xxx \
+npx outline-wiki-mcp --transport http
+```
+
+The MCP endpoint will be available at `http://localhost:3000/mcp`.
+
+### Docker
+
+```bash
+docker compose up -d
+```
+
+Provide your credentials via a `.env` file or environment variables:
+
+```bash
+OUTLINE_BASE_URL=https://your-instance.getoutline.com
+OUTLINE_API_KEY=ol_api_xxx
+```
+
+## Configuration
+
+| Option    | CLI Flag      | Environment Variable | Default |
+| --------- | ------------- | -------------------- | ------- |
+| Transport | `--transport` | `MCP_TRANSPORT`      | `stdio` |
+| Port      | `--port`      | `PORT`               | `3000`  |
+| Base URL  | -             | `OUTLINE_BASE_URL`   | -       |
+| API Key   | -             | `OUTLINE_API_KEY`    | -       |
+
+A JSON config file can also be used for Outline credentials:
+
+```bash
+npx outline-wiki-mcp --config /path/to/config.json
+```
+
+```json
+{
+  "outline": {
+    "baseUrl": "https://your-instance.getoutline.com",
+    "apiKey": "ol_api_xxx"
+  }
+}
+```
+
+Config file values take precedence over environment variables. CLI flags take precedence over environment variables for
+transport settings.
 
 ## Tools
 
@@ -67,7 +130,7 @@ Get your API key from Outline > **Settings** > **API** > **Create API Key**.
 
 ## Resources
 
-Browse your wiki structure using resource URIs:
+Browse your wiki structure using MCP resource URIs:
 
 | URI Pattern                  | Description                       |
 | ---------------------------- | --------------------------------- |
@@ -85,12 +148,18 @@ pnpm test           # Run tests
 pnpm lint           # Type-check
 ```
 
-### Local Testing
+### Running Locally
 
 ```bash
+# stdio mode (default)
 OUTLINE_BASE_URL=https://your-instance.getoutline.com \
 OUTLINE_API_KEY=ol_api_xxx \
-node dist/index.js
+pnpm start
+
+# HTTP mode
+OUTLINE_BASE_URL=https://your-instance.getoutline.com \
+OUTLINE_API_KEY=ol_api_xxx \
+pnpm start:http
 ```
 
 ## Contributing
