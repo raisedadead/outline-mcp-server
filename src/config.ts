@@ -82,14 +82,14 @@ export function getTransportConfig(): TransportConfig {
     );
   }
 
-  // Check for --port flag in args, then env var, default to 3000
+  // Check for --port flag in args, then env var, default to 9999
   const portIndex = process.argv.indexOf('--port');
   let portStr: string | undefined;
   if (portIndex !== -1 && process.argv[portIndex + 1]) {
     portStr = process.argv[portIndex + 1];
   }
   portStr = portStr || process.env.PORT;
-  const port = portStr ? parseInt(portStr, 10) : 3000;
+  const port = portStr ? parseInt(portStr, 10) : 9999;
 
   if (isNaN(port) || port < 1 || port > 65535) {
     throw new Error(

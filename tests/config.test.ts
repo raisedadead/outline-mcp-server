@@ -130,13 +130,13 @@ describe('Config', () => {
   });
 
   describe('getTransportConfig', () => {
-    it('should default to stdio transport on port 3000', () => {
+    it('should default to stdio transport on port 9999', () => {
       process.argv = ['node', 'script.js'];
 
       const config = getTransportConfig();
 
       expect(config.transport).toBe('stdio');
-      expect(config.port).toBe(3000);
+      expect(config.port).toBe(9999);
     });
 
     it('should use --transport flag from args', () => {

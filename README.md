@@ -48,13 +48,13 @@ Pull the pre-built image from GHCR and run in HTTP mode:
 
 ```bash
 docker run -d \
-  -p 3000:3000 \
+  -p 9999:9999 \
   -e OUTLINE_BASE_URL=https://your-instance.getoutline.com \
   -e OUTLINE_API_KEY=ol_api_xxx \
   ghcr.io/raisedadead/outline-wiki-mcp:latest
 ```
 
-The MCP endpoint will be available at `http://localhost:3000/mcp`.
+The MCP endpoint will be available at `http://localhost:9999/mcp`.
 
 ### Docker Compose
 
@@ -78,12 +78,12 @@ services:
   outline-wiki-mcp:
     image: ghcr.io/raisedadead/outline-wiki-mcp:latest
     ports:
-      - '${PORT:-3000}:3000'
+      - '${PORT:-9999}:9999'
     environment:
       - OUTLINE_BASE_URL=${OUTLINE_BASE_URL}
       - OUTLINE_API_KEY=${OUTLINE_API_KEY}
       - MCP_TRANSPORT=http
-      - PORT=3000
+      - PORT=9999
     restart: unless-stopped
 ```
 
@@ -154,7 +154,7 @@ claude mcp add \
 First start the server in HTTP mode (using Docker or npx), then add the remote endpoint:
 
 ```bash
-claude mcp add -s user --transport http outline http://localhost:3000/mcp
+claude mcp add -s user --transport http outline http://localhost:9999/mcp
 ```
 
 ### Claude.ai Web
@@ -162,10 +162,10 @@ claude mcp add -s user --transport http outline http://localhost:3000/mcp
 Add as a remote MCP server in Claude.ai settings using the HTTP endpoint URL:
 
 ```
-http://localhost:3000/mcp
+http://localhost:9999/mcp
 ```
 
-Replace `localhost:3000` with your deployed server address.
+Replace `localhost:9999` with your deployed server address.
 
 ### Generic MCP Client
 
@@ -193,7 +193,7 @@ Replace `localhost:3000` with your deployed server address.
   "mcpServers": {
     "outline": {
       "transport": "http",
-      "url": "http://localhost:3000/mcp"
+      "url": "http://localhost:9999/mcp"
     }
   }
 }
@@ -204,7 +204,7 @@ Replace `localhost:3000` with your deployed server address.
 | Option    | CLI Flag      | Environment Variable | Default |
 | --------- | ------------- | -------------------- | ------- |
 | Transport | `--transport` | `MCP_TRANSPORT`      | `stdio` |
-| Port      | `--port`      | `PORT`               | `3000`  |
+| Port      | `--port`      | `PORT`               | `9999`  |
 | Base URL  | -             | `OUTLINE_BASE_URL`   | -       |
 | API Key   | -             | `OUTLINE_API_KEY`    | -       |
 

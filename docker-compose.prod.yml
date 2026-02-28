@@ -2,10 +2,10 @@ services:
   outline-wiki-mcp:
     image: ghcr.io/raisedadead/outline-wiki-mcp:latest
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-9999}:9999"
     environment:
       - OUTLINE_BASE_URL=${OUTLINE_BASE_URL}
       - OUTLINE_API_KEY=${OUTLINE_API_KEY}
       - MCP_TRANSPORT=http
-      - PORT=3000
+      - PORT=9999
     restart: unless-stopped

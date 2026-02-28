@@ -38,13 +38,13 @@ COPY --link package.json ./
 
 ENV NODE_ENV=production
 ENV MCP_TRANSPORT=http
-ENV PORT=3000
+ENV PORT=9999
 
-EXPOSE 3000
+EXPOSE 9999
 
 USER app
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD node -e "fetch('http://localhost:3000/health').then(r=>{if(!r.ok)throw r;process.exit(0)}).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://localhost:9999/health').then(r=>{if(!r.ok)throw r;process.exit(0)}).catch(()=>process.exit(1))"
 
 CMD ["node", "dist/index.js"]
