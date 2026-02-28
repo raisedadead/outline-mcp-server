@@ -3,21 +3,14 @@ name: Release
 on:
   workflow_dispatch: # Manual trigger only
     inputs:
-      release_type:
-        description: "Type of release"
-        required: true
-        default: "auto"
-        type: choice
-        options:
-          - auto
-          - patch
-          - minor
-          - major
       dry_run:
         description: "Dry run (preview only)"
         required: false
         type: boolean
         default: false
+
+permissions:
+  contents: read
 
 jobs:
   lint:
@@ -36,6 +29,7 @@ jobs:
     name: "Publish Release"
     needs: [lint, test, build]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
       pull-requests: write
@@ -62,7 +56,7 @@ jobs:
       - name: "Setup Node.js"
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: 24.13.0
+          node-version: 24
           cache: "pnpm"
           registry-url: "https://registry.npmjs.org"
 
@@ -76,14 +70,11 @@ jobs:
           cat "$NPM_CONFIG_USERCONFIG" || true
 
       - name: "Install Dependencies"
-        run: pnpm install
-
-      - name: "Build Package"
-        run: pnpm run build
+        run: pnpm install --frozen-lockfile
 
       - name: "Execute Release"
         run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
+          if [ "$DRY_RUN" = "true" ]; then
             echo "Running dry-run release..."
             pnpm run release --dry-run
           else
@@ -91,11 +82,15 @@ jobs:
             pnpm run release
           fi
         env:
+          DRY_RUN: ${{ inputs.dry_run }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
   publish-docker:
     name: "Publish Docker Image"
     needs: [publish-release]
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/publish-docker.yml
     with:
       dry_run: ${{ inputs.dry_run }}
