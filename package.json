@@ -2,16 +2,20 @@
   "name": "outline-wiki-mcp",
   "version": "1.2.4",
   "description": "MCP server for Outline wiki integration",
-  "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./package.json": "./package.json"
+  "keywords": [
+    "claude",
+    "mcp",
+    "outline",
+    "wiki"
+  ],
+  "homepage": "https://github.com/raisedadead/outline-wiki-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/raisedadead/outline-wiki-mcp/issues"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raisedadead/outline-wiki-mcp.git"
   },
   "bin": {
     "outline-wiki-mcp": "dist/index.js"
@@ -19,14 +23,21 @@
   "files": [
     "dist"
   ],
+  "type": "module",
   "sideEffects": false,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/raisedadead/outline-wiki-mcp.git"
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
-  "homepage": "https://github.com/raisedadead/outline-wiki-mcp#readme",
-  "bugs": {
-    "url": "https://github.com/raisedadead/outline-wiki-mcp/issues"
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "build": "tsc",
@@ -44,20 +55,6 @@
     "release": "semantic-release",
     "prepare": "husky",
     "prepublishOnly": "pnpm run build"
-  },
-  "keywords": [
-    "mcp",
-    "outline",
-    "wiki",
-    "claude"
-  ],
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
-  "engines": {
-    "node": ">=22.14"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -86,6 +83,9 @@
     "*.{json,md,yaml,yml}": [
       "oxfmt --write"
     ]
+  },
+  "engines": {
+    "node": ">=22.14"
   },
   "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"
 }

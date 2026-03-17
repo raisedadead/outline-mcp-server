@@ -1,34 +1,26 @@
-# Outline Wiki MCP Server
+# Outline Wiki MCP
 
 [![npm version](https://img.shields.io/npm/v/outline-wiki-mcp)](https://www.npmjs.com/package/outline-wiki-mcp)
 [![Docker](https://img.shields.io/badge/ghcr.io-outline--wiki--mcp-blue)](https://ghcr.io/raisedadead/outline-wiki-mcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
 
-A [Model Context Protocol](https://modelcontextprotocol.io) server for [Outline](https://www.getoutline.com/) wiki
-integration. Enables LLM applications to search, read, create, and manage wiki documents through a standardized
-interface.
+> An [MCP](https://modelcontextprotocol.io) server for [Outline](https://www.getoutline.com/) wiki — search, read, create, and manage documents from any LLM client.
 
-Supports both **stdio** (for local tools like Claude Desktop, Claude Code) and **HTTP** transport (for remote clients
-like Claude.ai web).
+## What is this about?
+
+A [Model Context Protocol](https://modelcontextprotocol.io) server that connects LLM applications to your [Outline](https://www.getoutline.com/) wiki. Supports both **stdio** (for local tools like Claude Desktop, Claude Code) and **HTTP** transport (for remote clients like Claude.ai web).
 
 ## Features
 
-- **Full-text Search** - Find documents across your entire wiki
-- **Document Management** - Create, read, update, delete, and move documents
-- **Collection Organization** - Browse and manage document collections
-- **Archive & Restore** - Soft-delete with archive/restore functionality
-- **Draft Access** - Work with unpublished drafts
-- **Markdown Export** - Export documents as clean markdown
-- **MCP Resources** - Browse collections and documents via resource URIs
-- **Dual Transport** - Run as a local stdio server or remote HTTP service
-
-## Quick Start
-
-### Prerequisites
-
-- [Outline](https://www.getoutline.com/) instance (cloud or self-hosted)
-- API key from Outline > **Settings** > **API** > **Create API Key**
+- **Full-text Search** – Find documents across your entire wiki
+- **Document Management** – Create, read, update, delete, and move documents
+- **Collection Organization** – Browse and manage document collections
+- **Archive & Restore** – Soft-delete with archive/restore functionality
+- **Draft Access** – Work with unpublished drafts
+- **Markdown Export** – Export documents as clean markdown
+- **MCP Resources** – Browse collections and documents via resource URIs
+- **Dual Transport** – Run as a local stdio server or remote HTTP service
 
 ## Installation
 
@@ -78,7 +70,7 @@ services:
   outline-wiki-mcp:
     image: ghcr.io/raisedadead/outline-wiki-mcp:latest
     ports:
-      - '${PORT:-9999}:9999'
+      - "${PORT:-9999}:9999"
     environment:
       - OUTLINE_BASE_URL=${OUTLINE_BASE_URL}
       - OUTLINE_API_KEY=${OUTLINE_API_KEY}
@@ -87,38 +79,12 @@ services:
     restart: unless-stopped
 ```
 
-### From Source
+## Quick Start
 
-```bash
-git clone https://github.com/raisedadead/outline-wiki-mcp.git
-cd outline-wiki-mcp
-pnpm install
-pnpm build
-```
+### Prerequisites
 
-Build a local Docker image:
-
-```bash
-docker buildx bake
-```
-
-Run in stdio mode:
-
-```bash
-OUTLINE_BASE_URL=https://your-instance.getoutline.com \
-OUTLINE_API_KEY=ol_api_xxx \
-pnpm start
-```
-
-Run in HTTP mode:
-
-```bash
-OUTLINE_BASE_URL=https://your-instance.getoutline.com \
-OUTLINE_API_KEY=ol_api_xxx \
-pnpm start:http
-```
-
-## Client Configuration
+- [Outline](https://www.getoutline.com/) instance (cloud or self-hosted)
+- API key from Outline > **Settings** > **API** > **Create API Key**
 
 ### Claude Desktop
 
@@ -166,38 +132,6 @@ http://localhost:9999/mcp
 ```
 
 Replace `localhost:9999` with your deployed server address.
-
-### Generic MCP Client
-
-**stdio transport:**
-
-```json
-{
-  "mcpServers": {
-    "outline": {
-      "command": "npx",
-      "args": ["-y", "outline-wiki-mcp"],
-      "env": {
-        "OUTLINE_BASE_URL": "https://your-instance.getoutline.com",
-        "OUTLINE_API_KEY": "ol_api_xxx"
-      }
-    }
-  }
-}
-```
-
-**HTTP transport:**
-
-```json
-{
-  "mcpServers": {
-    "outline": {
-      "transport": "http",
-      "url": "http://localhost:9999/mcp"
-    }
-  }
-}
-```
 
 ## Configuration
 
@@ -267,44 +201,10 @@ Browse your wiki structure using MCP resource URIs:
 | `outline://collections/{id}` | Collection details with documents |
 | `outline://documents/{id}`   | Document content in markdown      |
 
-## Development
-
-| Command                      | Description          |
-| ---------------------------- | -------------------- |
-| `pnpm install`               | Install deps         |
-| `pnpm build`                 | Compile TypeScript   |
-| `pnpm dev`                   | Watch mode           |
-| `pnpm test`                  | Run tests            |
-| `pnpm lint`                  | Type-check           |
-| `docker buildx bake`         | Build Docker image   |
-| `docker buildx bake --print` | Preview build config |
-
-### Running Locally
-
-```bash
-# stdio mode (default)
-OUTLINE_BASE_URL=https://your-instance.getoutline.com \
-OUTLINE_API_KEY=ol_api_xxx \
-pnpm start
-
-# HTTP mode
-OUTLINE_BASE_URL=https://your-instance.getoutline.com \
-OUTLINE_API_KEY=ol_api_xxx \
-pnpm start:http
-```
-
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing guidelines, and commit
-conventions.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## License
 
-MIT - see [LICENSE](LICENSE)
-
-## Links
-
-- [Outline](https://www.getoutline.com/) - Knowledge base for teams
-- [Outline API](https://www.getoutline.com/developers) - API reference
-- [Model Context Protocol](https://modelcontextprotocol.io) - MCP specification
-- [MCP Servers](https://github.com/modelcontextprotocol/servers) - Reference implementations
+ISC License - see [LICENSE](./LICENSE) file for details.
